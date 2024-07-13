@@ -17,14 +17,18 @@ In addition to `CLIENT_ID` and `CLIENT_SECRET` in the .env file, create a variab
 Right now, the way to search is to add the desired song's URI as a command line argument when running the file.<br>
 Example: `python main.py 7th29u6DX01vM4KJlIBr1T` <br>
 To learn how to find the URI of a song, [look here](https://community.spotify.com/t5/FAQs/Basics-of-a-Spotify-URL/ta-p/919201).<br>
-One limitation is that only the Spotify profile's public playlists can be searched. 
-You can search private playlists if you find the playlist's URI, however, that is not a feature of this program.
+
+This program searches both your public and private playlists. If you have a lot of playlists, it may take a while for the program to finish running.
 
 ## Planned Features
 - Searching using the full song's URL (so you don't have to manually extract the URI)
+- Searching only playlists created by user (exclude playlists by other authors)
 - A nicer results printout
 - Code cleanup (not really a feature, but it needs to be done)
 
 ## Recent Updates
-Last updated 12 Jul 2024
+Last updated 13 Jul 2024
+- Added support for private playlists and fixed related bugs
+
+12 Jul 2024
 - Committed first rough working draft

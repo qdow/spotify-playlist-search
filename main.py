@@ -21,7 +21,7 @@ USER_NAME = config('USER_NAME')
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                client_secret=CLIENT_SECRET,
                                                redirect_uri="http://localhost:1234/",
-                                               scope="user-library-read"))
+                                               scope="user-library-read playlist-read-private"))
 
 
 def search_playlists(song_uri):
@@ -45,8 +45,12 @@ def search_playlists(song_uri):
     playlist_items = {}
     for pl_id in playlist_ids:
         playlist = sp.playlist_items(pl_id)['items']
+        if not playlist:    # skip empty playlists
+            continue
         song_ids = []
         for item in playlist:
+            if not item['track']:   # skip local songs
+                continue
             song_ids.append(item['track']['id'])
         playlist_items[pl_id] = song_ids
 
@@ -67,5 +71,3 @@ if __name__ == '__main__':
             print(results[i])
     else:
         print('None')
-
-
