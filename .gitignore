@@ -1,0 +1,6 @@
+.env
+.cache
+.DS_Store
+.git
+.idea
+test/
