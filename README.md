@@ -7,27 +7,32 @@
 4. [Recent Updates](#recent-updates)
 
 ## Introduction
-This program allows you to find out which of your playlists (if any) contains a specific song.
+This program uses the *[Spotipy](https://spotipy.readthedocs.io/en/2.24.0/)* Python library to
+allow you to find out which of your playlists (if any) contains a specific song.
 
 
 ## Usage
+***PLEASE NOTE:*** If you have a lot of playlists, it may take a while for the program gather them all up before it's ready to search them.
+I have over 250+ playlists on my account (which is why I wanted to create this tool in the first place) and it takes a few minutes to finish gathering them. Please be patient.<br>
+
 You must first create a .env file with your own Spotify client ID and secret, which you can generate on the Spotify developer dashboard [here](https://developer.spotify.com/dashboard/applications).<br>
 In addition to `CLIENT_ID` and `CLIENT_SECRET` in the .env file, create a variable called `USER_NAME` with a string containing your Spotify username.
 
-Right now, the way to search is to add the desired song's URI as a command line argument when running the file.<br>
-Example: `python main.py 7th29u6DX01vM4KJlIBr1T` <br>
-To learn how to find the URI of a song, [look here](https://community.spotify.com/t5/FAQs/Basics-of-a-Spotify-URL/ta-p/919201).<br>
+Run the program with: `python main.py` in the directory which contains the main.py file.<br>
+When the program asks for the URL of the song you would like to search for, 
+you can find the song's url by going to Spotify, right clicking on the desired song, choosing 'Share', then 'Copy Song Link'.<br>
 
-This program searches both your public and private playlists. If you have a lot of playlists, it may take a while for the program to finish running.
+This program searches both your public and private playlists. 
 
-## Planned Features
-- Searching using the full song's URL (so you don't have to manually extract the URI)
-- Searching only playlists created by user (exclude playlists by other authors)
-- A nicer results printout
-- Code cleanup (not really a feature, but it needs to be done)
+## Planned Features and Updates
+- Implementing error handling for incorrect URLs. Right now, the program expects a correct song URL
 
 ## Recent Updates
 Last updated 13 Jul 2024
+- Made it so instead of running the program with the song ID as a command line argument, the program prompts the user for the song URL while running
+- Which also allowed for the ability to continue searching for additional songs without needing to rerun the program
+- Added ability to search using the full song's URL (so you don't have to manually extract the ID)
+- Separated gathering playlists and searching playlists into separate functions to reduce the need to regather playlists
 - Added support for private playlists and fixed related bugs
 
 12 Jul 2024

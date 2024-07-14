@@ -4,9 +4,6 @@ Filename: main.py
 Author: qdow
 Date updated: 2024-07-13
 Description: Searches a user's playlists for a specific song and lists which playlists contain the song
-
-NOTE:
-        this is currently the rough draft first working version
 """
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -24,11 +21,10 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                scope="user-library-read playlist-read-private"))
 
 
-def search_playlists(song_uri):
+def gather_playlists():
     """
-    Searches all of a user's playlists for a specific song
-    :param song_uri: The URI as a command line argument of the song to search for
-    :return: A dictionary by ID and title of the playlists which contain the song searched for
+    Gathers all of a user's playlists in a dictionary of playlist IDs and song IDs
+    :return: A dictionary by ID of playlists and lists of song IDs in each playlist
     """
     # get all users playlists
     all_playlists = sp.user_playlists(USER_NAME)
@@ -53,10 +49,20 @@ def search_playlists(song_uri):
                 continue
             song_ids.append(item['track']['id'])
         playlist_items[pl_id] = song_ids
+    return playlist_items
 
+
+def search_for_song(pl_dict, song_id):
+    """
+    Searches for user's playlists containing a specific song.
+    :param pl_dict: Dictionary of the IDs of the playlists with lists of the songs' IDs
+    :param song_id: ID as a string of the song to search for
+    :return: Dictionary of playlist ID and name of any playlists containing the song.
+             Returns False if no playlists are found.
+    """
     included_pl = {}
-    for pl_id in playlist_items:
-        if song_uri in playlist_items[pl_id]:
+    for pl_id in pl_dict:
+        if song_id in pl_dict[pl_id]:
             included_pl[pl_id] = (sp.playlist(pl_id)['name'])
     if included_pl == {}:
         return False
@@ -64,10 +70,32 @@ def search_playlists(song_uri):
         return included_pl
 
 
+def extract_id():
+    """
+    Takes the url of a song on Spotify and gets the song's ID
+    Assumes url is in this format:
+        https://open.spotify.com/track/33i4H7iDxIes1d8Nd0S3QF?si=qvCA_Jv0QjiN8-2hXL5h5Q
+    :return: String of the ID
+    """
+    url = input('Enter the URL of the song to search for: ')
+    print()
+    return url[31:53]
+
+
 if __name__ == '__main__':
-    results = search_playlists(sys.argv[1])
-    if results is not False:
-        for i in results:
-            print(results[i])
-    else:
-        print('None')
+    print('Gathering playlists...\n')
+    playlists = gather_playlists()
+    print('Playlists gathered!\n')
+    end = ''
+    while end != 'q':
+        s_id = extract_id()
+        results = search_for_song(playlists, s_id)
+        if results is not False:
+            print('The song is in these playlists:')
+            for i in results:
+                print("   ", results[i])
+        else:
+            print("Song is not in any of user's playlists.")
+        end = input('\nPress q to quit or any other key to continue: ')
+        print()
+    print('Done!')
