@@ -8,7 +8,6 @@ Description: Searches a user's playlists for a specific song and lists which pla
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from decouple import config
-import sys
 
 
 CLIENT_ID = config('CLIENT_ID')
@@ -70,16 +69,18 @@ def search_for_song(pl_dict, song_id):
         return included_pl
 
 
-def extract_id():
+def extract_song():
     """
-    Takes the url of a song on Spotify and gets the song's ID
+    Takes the url of a song on Spotify and gets the song's ID and title
     Assumes url is in this format:
         https://open.spotify.com/track/33i4H7iDxIes1d8Nd0S3QF?si=qvCA_Jv0QjiN8-2hXL5h5Q
-    :return: String of the ID
+    :return: Tuple with song ID and song title
     """
     url = input('Enter the URL of the song to search for: ')
     print()
-    return url[31:53]
+    song_id = url[31:53]
+    title = sp.track(song_id)['name']
+    return song_id, title
 
 
 if __name__ == '__main__':
@@ -88,10 +89,10 @@ if __name__ == '__main__':
     print('Playlists gathered!\n')
     end = ''
     while end != 'q':
-        s_id = extract_id()
-        results = search_for_song(playlists, s_id)
+        song_info = extract_song()
+        results = search_for_song(playlists, song_info[0])
         if results is not False:
-            print('The song is in these playlists:')
+            print(f'The song "{song_info[1]}" is on these playlists:')
             for i in results:
                 print("   ", results[i])
         else:

@@ -4,3 +4,5 @@
 .git
 .idea
 test/
+main_p.py
+playlists_dict.json

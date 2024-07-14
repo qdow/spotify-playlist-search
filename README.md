@@ -26,6 +26,7 @@ This program searches both your public and private playlists.
 
 ## Planned Features and Updates
 - Implementing error handling for incorrect URLs. Right now, the program expects a correct song URL
+- Searching only playlists created by user (exclude playlists by other authors)
 
 ## Recent Updates
 Last updated 13 Jul 2024
