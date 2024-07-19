@@ -22,6 +22,10 @@ Run the program with: `python main.py` in the directory which contains the main.
 When the program asks for the URL of the song you would like to search for, 
 you can find the song's url by going to Spotify, right clicking on the desired song, choosing 'Share', then 'Copy Song Link'.<br>
 
+The first time you run the program, it will grab all your playlists from Spotify and save the data in a json file called `playlist_data.json`.
+Unless you add or update playlists, you will want to comment out the code for getting your playlists from Spotify and instead load the playlist data file so it is faster.
+Comments in the code instruct which lines will be needed for what purpose.
+
 This program searches both your public and private playlists. 
 
 ## Planned Features and Updates
@@ -29,7 +33,11 @@ This program searches both your public and private playlists.
 - Searching only playlists created by user (exclude playlists by other authors)
 
 ## Recent Updates
-Last updated 13 Jul 2024
+Last updated 14 Jul 2024
+- Changed the structure of the playlist dictionary
+- Added ability to save your playlist data as a json file to easily load up so you don't have to gather them from Spotify every single time
+
+13 Jul 2024
 - Made it so instead of running the program with the song ID as a command line argument, the program prompts the user for the song URL while running
 - Which also allowed for the ability to continue searching for additional songs without needing to rerun the program
 - Added ability to search using the full song's URL (so you don't have to manually extract the ID)

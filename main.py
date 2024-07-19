@@ -20,12 +20,11 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                scope="user-library-read playlist-read-private"))
 
 
-def gather_playlists():
+def find_playlist_ids():
     """
-    Gathers all of a user's playlists in a dictionary of playlist IDs and song IDs
-    :return: A dictionary by ID of playlists and lists of song IDs in each playlist
+    Gets the IDs of all user's playlists
+    :return: List of playlist IDs
     """
-    # get all users playlists
     all_playlists = sp.user_playlists(USER_NAME)
     playlist_ids = []
     while all_playlists:
@@ -35,20 +34,62 @@ def gather_playlists():
             all_playlists = sp.next(all_playlists)
         else:
             all_playlists = None
+    return playlist_ids
 
-    # create dictionary of playlist ids and lists of song ids
-    playlist_items = {}
+
+def gather_playlists():
+    """
+    Gathers all of a user's playlists in a dictionary of playlist details and dictionary of song details
+    Uses function "find_playlist_ids()" to get a list of playlist IDs.
+    :return: A dictionary of playlist id, title, and dictionary of song details
+    """
+    playlist_ids = find_playlist_ids()
+    playlist_items = []
     for pl_id in playlist_ids:
+        pl_dict = {
+            'id': pl_id,
+            'title': sp.playlist(pl_id)['name']
+        }
+
+        print(sp.playlist(pl_id)['name'])  # TEST
+
         playlist = sp.playlist_items(pl_id)['items']
         if not playlist:    # skip empty playlists
             continue
-        song_ids = []
+        songs_list = []  # now get details for every song and add to list
         for item in playlist:
+            song_dict = {}
             if not item['track']:   # skip local songs
                 continue
-            song_ids.append(item['track']['id'])
-        playlist_items[pl_id] = song_ids
+            song_id = item['track']['id']
+            song_dict['id'] = song_id
+            if song_id is None:
+                continue
+            song_dict['title'] = sp.track(song_id)['name']
+            songs_list.append(song_dict)
+        pl_dict['songs'] = songs_list
+        playlist_items.append(pl_dict)
     return playlist_items
+
+
+def save_pl_dict(pl_dict):
+    """
+    Saves dictionary of playlist IDs and song IDs to a json file for easy access
+    :param pl_dict: Dictionary of playlists
+    """
+    with open('playlist_data.json', 'w') as outfile:
+        json.dump(pl_dict, outfile)
+    print('Playlists saved.')
+
+
+def read_pl_dict():
+    """
+    Loads in an existing playlist dictionary json file
+    :return: Dictionary loaded from json file
+    """
+    with open('playlist_data.json', 'r') as infile:
+        print('Playlists loaded.')
+        return json.load(infile)
 
 
 def search_for_song(pl_dict, song_id):
@@ -60,9 +101,10 @@ def search_for_song(pl_dict, song_id):
              Returns False if no playlists are found.
     """
     included_pl = {}
-    for pl_id in pl_dict:
-        if song_id in pl_dict[pl_id]:
-            included_pl[pl_id] = (sp.playlist(pl_id)['name'])
+    for playlist in pl_dict:
+        for song in playlist['songs']:
+            if song['id'] == song_id:
+                included_pl[playlist['id']] = playlist['title']
     if included_pl == {}:
         return False
     else:
@@ -84,9 +126,16 @@ def extract_song():
 
 
 if __name__ == '__main__':
+    # ONLY RUN THIS PART WHEN YOU NEED TO REWRITE THE PLAYLIST DATA
     print('Gathering playlists...\n')
     playlists = gather_playlists()
     print('Playlists gathered!\n')
+    # SAVE PLAYLIST DICT
+    save_pl_dict(playlists)
+
+    # OTHERWISE READ PLAYLIST DICT
+    # playlists = read_pl_dict()
+
     end = ''
     while end != 'q':
         song_info = extract_song()
@@ -96,7 +145,8 @@ if __name__ == '__main__':
             for i in results:
                 print("   ", results[i])
         else:
-            print("Song is not in any of user's playlists.")
+            print(f'The song "{song_info[1]}" is not in any of the playlists.')
         end = input('\nPress q to quit or any other key to continue: ')
         print()
+
     print('Done!')
